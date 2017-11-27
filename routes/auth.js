@@ -19,9 +19,9 @@ router.use((req, res, next) => {
 
 router.post('/sign_in', (req, res) => {
   const { email, password } = req.body;
-  req.db.collection('users').findOne({ email, pasword: password }, (err, item) => {
+  req.app.locals.db.collection('users').findOne({ email, pasword: password }, (err, item) => {
     if (err) {
-      res.json({ error: 'error' });
+      res.json({ error: 'User not exist' });
     }
     res.json({
       token: jwt.sign({ id: item._id }, secret),
@@ -32,26 +32,34 @@ router.post('/sign_in', (req, res) => {
 
 router.post('/sign_up', (req, res) => {
   const { email, password } = req.body;
-  req.findOne({ email: email, password: password }, (error, item) => {
+  const { db } = req.app.locals.db;
+  db.collection('users').findOne({ email, password }, (error, item) => {
     if (error) {
       res.json({ error: 'error' });
     }
+
     if (item) {
-      res.json({ error: 'Email exist' });
+      res.json({
+        token: jwt.sign({ id: item._id }, secret),
+      });
     } else {
-      req.db.collection('users').insertOne({
-        email: email,
-        password: password,
+      db.collection('users').insertOne({
+        email,
+        password,
       }, (err, inserted) => {
         if (err) {
           res.json({ error: 'Insert error' });
         }
         res.json({
-          token: jwt.sign({ id: inserted._id }, secret),
+          token: jwt.sign({ id: inserted.insertedId }, secret),
         });
       });
     }
   });
+});
+
+router.get('/', (req, res) => {
+  res.json(req.token);
 });
 
 module.exports = router;
