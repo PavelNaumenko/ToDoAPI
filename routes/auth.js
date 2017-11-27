@@ -32,7 +32,7 @@ router.post('/sign_in', (req, res) => {
 
 router.post('/sign_up', (req, res) => {
   const { email, password } = req.body;
-  req.findOne({ email, pasword: password }, (error, item) => {
+  req.findOne({ email: email, password: password }, (error, item) => {
     if (error) {
       res.json({ error: 'error' });
     }
