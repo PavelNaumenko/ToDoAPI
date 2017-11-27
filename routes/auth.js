@@ -40,8 +40,8 @@ router.post('/sign_up', (req, res) => {
       res.json({ error: 'Email exist' });
     } else {
       req.db.collection('users').insertOne({
-        email,
-        password,
+        email: email,
+        password: password,
       }, (err, inserted) => {
         if (err) {
           res.json({ error: 'Insert error' });

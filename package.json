@@ -1,0 +1,33 @@
+{
+  "name": "todoapi",
+  "version": "1.0.0",
+  "description": "Simple ToDO API",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PavelNaumenko/ToDoAPI.git"
+  },
+  "keywords": [
+    "todo"
+  ],
+  "author": "Delorian",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PavelNaumenko/ToDoAPI/issues"
+  },
+  "homepage": "https://github.com/PavelNaumenko/ToDoAPI#readme",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "jsonwebtoken": "^8.1.0",
+    "mongodb": "^2.2.33"
+  },
+  "devDependencies": {
+    "eslint": "^4.12.0",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.8.0"
+  }
+}
