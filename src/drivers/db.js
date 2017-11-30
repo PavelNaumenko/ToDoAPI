@@ -2,38 +2,24 @@ const MongoClient = require('mongodb').MongoClient;
 
 const connString = 'mongodb://localhost:27017/todo';
 
-class Db {
-    constructor() {}
+let instance = null;
 
-    connect(connStr){
-        let self = this;
-        MongoClient.connect(connString)
-            .then(db => {
-                self.db = db;
-            })
-            .catch(err => console.log(err));
+class Db {
+    constructor() {
+        if (!instance) {
+            instance = this;
+        }
+        return instance;
     }
 
-     get() {
-        return this.db;
+    connect() {
+        return MongoClient.connect(connString)
+            .then(db => {
+                instance.db = db;
+            })
+            .catch(err => console.log(err));
     }
 }
 
 const db = new Db();
 module.exports = db;
-
-
-// // app.js
-//
-// const dp = require('db');
-//
-// db.connect()
-// .then(() => {
-//     app.listen(80)
-// });
-//
-// //
-//
-// const dp = require('db');
-//
-// db.get();
