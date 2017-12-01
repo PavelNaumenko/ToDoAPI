@@ -1,24 +1,27 @@
-const MongoClient = require('mongodb').MongoClient;
+const { MongoClient } = require('mongodb');
 
-const connString = 'mongodb://localhost:27017/todo';
 
 let instance = null;
 
 class Db {
-    constructor() {
-        if (!instance) {
-            instance = this;
-        }
-        return instance;
+  constructor() {
+    if (!instance) {
+      instance = this;
     }
+    return instance;
+  }
 
-    connect() {
-        return MongoClient.connect(connString)
-            .then(db => {
-                instance.db = db;
-            })
-            .catch(err => console.log(err));
-    }
+  connect(connStr) {
+    return MongoClient.connect(connStr)
+      .then((db) => {
+        this.db = db;
+      })
+      .catch(err => console.log(err));
+  }
+
+  disconnect() {
+    this.db = null;
+  }
 }
 
 const db = new Db();

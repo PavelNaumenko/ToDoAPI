@@ -1,4 +1,5 @@
 .eslintrc
-node_modules/*
-data/*
-.idea/*
+node_modules
+data
+.idea
+.DS_Store
