@@ -3,11 +3,14 @@ const bcrypt = require('bcrypt');
 
 const collection = 'users';
 
-function saveUser(email, password) {
-  return bcrypt.hash(password, 10)
-    .then(hash => driver.db.collection(collection).insertOne({ email, password: hash })
-      .then(id => id));
-}
+const saveUser = (email, password) => bcrypt.hash(password, 10)
+  .then(hash => driver.db.collection(collection).insertOne({ email, password: hash }));
+
+// function saveUser(email, password) {
+//   return bcrypt.hash(password, 10)
+//     .then(hash => driver.db.collection(collection).insertOne({ email, password: hash })
+//       .then(id => id));
+// }
 
 function login(email, password) {
   return driver.db.collection(collection).findOne({ email, password })

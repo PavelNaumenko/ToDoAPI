@@ -14,7 +14,9 @@ function signIn(req, res) {
         .then((isCompare) => {
           if (isCompare) {
             res.status(200).json(auth.createToken(user._id));
-          } else { res.status(401).json({ message: 'Wrong password' }); }
+          } else {
+            res.status(401).json({ message: 'Wrong password' });
+          }
         }).catch(err => console.log(err));
     });
 }
@@ -31,7 +33,8 @@ function signUp(req, res) {
             res.send(auth.createToken(result.insertedId));
           });
       }
-    });
+    })
+    .catch(err => next(err));
 }
 
 module.exports = {

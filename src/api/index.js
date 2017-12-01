@@ -1,9 +1,7 @@
-const userRouter = require('./users');
+const apiRouter = require('express').Router();
 // const taskRouter = require('./tasks');
 
+apiRouter.use('/v0/users', require('./users'));
 
-module.exports = {
-  userRouter,
-  // taskRouter
-};
+module.exports = apiRouter;
 
