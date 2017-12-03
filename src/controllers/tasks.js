@@ -1,7 +1,7 @@
 const { TaskModel } = require('../models');
 
 const findAll = (req, res, next) => {
-  TaskModel.findAllByUserId(req.params.id)
+  TaskModel.findAllByUserId(req.app.locals.userId)
     .then(tasks => res.status(200).json(tasks))
     .catch(err => next(err));
 };
