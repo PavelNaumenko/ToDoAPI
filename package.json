@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "DEBUG=todo* nodemon ./src/app.js",
     "lint": "./node_modules/.bin/eslint ./src/**",
-    "lint-fix": "./node_modules/.bin/eslint ./src/** --fix"
+    "lint-fix": "./node_modules/.bin/eslint ./src/** --fix",
+    "db-start-home": "/Users/delorian/Downloads/mongodb-osx-x86_64-3.4.10/bin/mongod --dbpath /Users/delorian/PhpstormProjects/ToDoAPI/data/"
   },
   "repository": {
     "type": "git",

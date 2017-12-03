@@ -1,5 +1,5 @@
 module.exports = {
-    secret: 'abrakadaBra',
-    dbString: 'mongodb://localhost:27017/todo',
-    port: 8080
+  SECRET: 'abrakadaBra',
+  DB_STRING: 'mongodb://localhost:27017/todo',
+  PORT: 8080,
 };
