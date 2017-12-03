@@ -1,16 +1,12 @@
 const jwt = require('jsonwebtoken');
-const { secret } = require('../../config');
+const { SECRET } = require('../../config');
 
-function createToken(id) {
-  return jwt.sign({ id }, secret);
-}
+const createToken = id => jwt.sign({ id }, SECRET)
+  .then(token => `Bearer ${token}`);
 
-function getIdFromToken(token) {
-  return jwt.verify(token, secret);
-}
+const getIdFromToken = token => jwt.verify(token.split(' ')[1], SECRET);
 
 module.exports = {
   createToken,
   getIdFromToken,
-
 };

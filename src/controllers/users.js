@@ -2,14 +2,13 @@ const { UserModel } = require('../models');
 const auth = require('../helpers/auth');
 const bcrypt = require('bcrypt');
 
-function signIn(req, res) {
+const signIn = (req, res, next) => {
   const { email, password } = req.body;
-  UserModel.findUser(email)
+  UserModel.findByEmail(email)
     .then((user) => {
       if (!user) {
         res.status(404).json({ message: 'User not found' });
       }
-      console.log(user);
       bcrypt.compare(password, user.password)
         .then((isCompare) => {
           if (isCompare) {
@@ -17,25 +16,25 @@ function signIn(req, res) {
           } else {
             res.status(401).json({ message: 'Wrong password' });
           }
-        }).catch(err => console.log(err));
+        }).catch(err => next(err));
     });
-}
+};
 
-function signUp(req, res) {
+const signUp = (req, res, next) => {
   const { email, password } = req.body;
-  UserModel.findUser(email)
+  UserModel.findByEmail(email)
     .then((user) => {
       if (user) {
         res.status(409).json({ message: 'User exist' });
       } else {
-        UserModel.saveUser(email, password)
+        UserModel.save(email, password)
           .then((result) => {
             res.send(auth.createToken(result.insertedId));
           });
       }
     })
     .catch(err => next(err));
-}
+};
 
 module.exports = {
   signUp,
