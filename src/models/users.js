@@ -9,7 +9,6 @@ const save = (email, password) => bcrypt.hash(password, 10)
 const findByEmail = email => driver.db.collection(collection).findOne({ email })
   .then(user => user);
 
-
 module.exports = {
   save,
   findByEmail,

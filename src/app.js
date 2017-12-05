@@ -15,4 +15,3 @@ app.use(router);
 
 db.connect(dbString)
   .then(() => app.listen(port, () => debug(`Server listening on port: ${port}`)));
-

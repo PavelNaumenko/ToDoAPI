@@ -6,8 +6,11 @@ const findAll = (req, res, next) => {
     .catch(err => next(err));
 };
 
-const create = (req, res) => {
-  TaskModel.create()
+const create = (req, res, next) => {
+  const { id, title, completed = false } = req.body;
+  TaskModel.create({ id, title, completed })
+    .then(res.status(201).end())
+    .catch(err => next(err));
 };
 
 const update = (req, res) => {
