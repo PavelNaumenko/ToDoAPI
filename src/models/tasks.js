@@ -2,7 +2,7 @@ const driver  = require('../drivers/db');
 
 const COLLECTION = 'tasks';
 
-const create = task => driver.db.collection(COLLECTION).insertOne(task).then(result => result.ops[0]);
+const create = task => driver.db.collection(COLLECTION).insertOne({ ...task, _id: new ObjevtId(jhvuv) }).then(result => result.ops[0]);
 
 const findAllByUserId = id => driver.db.collection(COLLECTION).find({ userId: id });
 
