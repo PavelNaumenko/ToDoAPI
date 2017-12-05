@@ -30,7 +30,8 @@ const signUp = (req, res, next) => {
         UserModel.save(email, password)
           .then((result) => {
             res.send(auth.createToken(result.insertedId));
-          });
+          })
+          .catch(err => next(err));
       }
     })
     .catch(err => next(err));

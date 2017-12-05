@@ -1,9 +1,9 @@
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 class Db {
   connect(connStr) {
     return MongoClient.connect(connStr)
-      .then((db) => { this.db = db; })
+      .then((db) => {this.db = db; })
       .catch(err => err);
   }
 
