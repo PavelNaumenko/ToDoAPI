@@ -1,7 +1,19 @@
 const { TaskModel } = require('../models');
 
 const findAll = (req, res, next) => {
-  TaskModel.findAllByUserId(req.app.locals.userId)
+  const {
+    limit, offset, completed, created_at,
+  } = req.query;
+  const { userId } = req.app.locals;
+  const filter = { userId };
+  if (completed) {
+    filter.completed = completed;
+  }
+  if (created_at !== '-1' && created_at !== '1') {
+    res.status(403).json({ message: 'Bad sort specification ' });
+    return;
+  }
+  TaskModel.findAllByUserId(filter, limit, offset, created_at)
     .then(tasks => res.status(200).json(tasks))
     .catch(err => next(err));
 };
@@ -58,10 +70,27 @@ const remove = (req, res, next) => {
     .catch(err => next(err));
 };
 
+const removeAll = (req, res, next) => {
+  const { filter = {}, completed } = req.query;
+  if (completed) {
+    filter.completed = completed;
+  }
+  TaskModel.removeAll(filter)
+    .then((task) => {
+      if (task) {
+        res.status(200).json(task);
+      } else {
+        res.status(404).json({ message: 'Task not found' });
+      }
+    })
+    .catch(err => next(err));
+};
+
 module.exports = {
   findById,
   findAll,
   create,
   update,
   remove,
+  removeAll,
 };

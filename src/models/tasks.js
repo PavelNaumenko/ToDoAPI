@@ -3,29 +3,43 @@ const { ObjectId } = require('mongodb');
 
 const COLLECTION = 'tasks';
 
-const create = task => driver.db.collection(COLLECTION).insertOne({ ...task, _id: new ObjectId() })
+const create = task => driver.db.collection(COLLECTION).insertOne({
+  ...task,
+  _id: new ObjectId(),
+  created_at: Date.now(),
+})
   .then(result => result.ops[0]);
 
-const findAllByUserId = id => driver.db.collection(COLLECTION)
-  .find({ userId: id }, { _id: 1, title: 1, completed: 1 })
+const findAllByUserId = (filter, limit = 0, offset = 0, sort = 1) => driver.db.collection(COLLECTION)
+  .find(filter, {
+    _id: 1, title: 1, completed: 1, created_at: 1,
+  })
+  .skip(parseInt(offset, 10))
+  .limit(parseInt(limit, 10))
+  .sort({ created_at: parseInt(sort, 10) })
   .toArray();
 
 const findById = id => driver.db.collection(COLLECTION)
   .findOne({ _id: new ObjectId(id) }, { _id: 1, title: 1, completed: 1 });
 
-const update = task => driver.db.collection(COLLECTION).updateOne({ _id: new ObjectId(task.id) }, { $set: task });
+const update = task => driver.db.collection(COLLECTION).updateOne({ _id: new ObjectId(task._id) }, {
+  $set: {
+    ...task,
+    _id: new ObjectId(task._id),
+  },
+});
 
-const remove = id => driver.db.collection(COLLECTION).findOneAndDelete({ _id: new ObjectId(id) }).then(result => result.value);
+const remove = id => driver.db.collection(COLLECTION)
+  .findOneAndDelete({ _id: new ObjectId(id) }).then(result => result.value);
+
+const removeAll = filter => driver.db.collection(COLLECTION).deleteMany(filter);
 
 const validate = (task) => {
-  console.log(task);
   const { title, completed = false, id } = task;
   if (typeof title !== 'string') {
-    console.log('title');
     return false;
   }
   if (typeof completed !== 'string' || !(completed === 'true' || completed === 'false')) {
-    console.log('compl');
     return false;
   }
   if (id) {
@@ -43,5 +57,6 @@ module.exports = {
   findById,
   update,
   remove,
+  removeAll,
   validate,
 };
