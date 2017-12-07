@@ -5,7 +5,7 @@ const { Authorization } = require('../middlewares');
 const express = require('express');
 
 const router = express.Router();
-//router.use(Authorization.checkAuth);
+router.use(Authorization.checkAuth);
 
 router.get('/tasks', TaskController.findAll);
 router.post('/tasks', TaskController.create);
