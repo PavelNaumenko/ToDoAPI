@@ -4,7 +4,7 @@ const findAll = (req, res, next) => {
   const {
     limit, offset, completed, created_at,
   } = req.query;
-  const { userId } = req.app.locals;
+  const { userId } = req;
   const filter = { userId };
   if (completed) {
     filter.completed = completed;
@@ -34,7 +34,7 @@ const create = (req, res, next) => {
   const { id, title, completed = false } = req.body;
   if (TaskModel.validate({ id, title, completed })) {
     TaskModel.create({
-      _id: id, title, completed, userId: req.app.locals.userId,
+      _id: id, title, completed, userId: req.userId,
     })
       .then((result) => {
         res.json(result);
@@ -49,7 +49,7 @@ const update = (req, res, next) => {
   const { title, completed = false } = req.body;
   if (TaskModel.validate({ id: req.params.id, title, completed })) {
     TaskModel.update({
-      _id: req.params.id, title, completed, userId: req.app.locals.userId,
+      _id: req.params.id, title, completed, userId: req.userId,
     })
       .then(result => res.json(result))
       .catch(err => next(err));

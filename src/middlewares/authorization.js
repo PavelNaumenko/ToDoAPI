@@ -5,7 +5,7 @@ const checkAuth = (req, res, next) => {
   if (authStr) {
     const token = auth.getIdFromToken(authStr);
     if (token) {
-      req.app.locals.userId = token.id;
+      req.userId = token.id;
       next();
     } else {
       next('err');

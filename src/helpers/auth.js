@@ -3,7 +3,7 @@ const { SECRET } = require('../../config');
 
 const createToken = (id) => {
   const token = jwt.sign({ id }, SECRET);
-  return `Bearer ${token}`;
+  return { token };
 };
 
 const getIdFromToken = authStr => jwt.verify(authStr.split(' ')[1], SECRET);
