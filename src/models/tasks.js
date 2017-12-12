@@ -5,7 +5,7 @@ const COLLECTION = 'tasks';
 
 const create = task => driver.db.collection(COLLECTION).insertOne({
   ...task,
-  _id: new ObjectId(),
+  _id: new ObjectId(task._id),
   created_at: Date.now(),
 })
   .then(result => result.ops[0]);
