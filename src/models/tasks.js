@@ -6,7 +6,7 @@ const COLLECTION = 'tasks';
 const create = task => driver.db.collection(COLLECTION).insertOne({
   ...task,
   _id: new ObjectId(task._id),
-  created_at: Date.now(),
+  created_at: new Date(),
 })
   .then(result => result.ops[0]);
 
@@ -33,23 +33,6 @@ const remove = id => driver.db.collection(COLLECTION)
   .findOneAndDelete({ _id: new ObjectId(id) }).then(result => result.value);
 
 const removeAll = filter => driver.db.collection(COLLECTION).deleteMany(filter);
-
-const validate = (task) => {
-  const { title, completed = false, id } = task;
-  if (typeof title !== 'string') {
-    return false;
-  }
-  if (typeof completed !== 'string' || !(completed === 'true' || completed === 'false')) {
-    return false;
-  }
-  if (id) {
-    const tmp = parseInt(id, 16);
-    if (tmp.toString(16) !== id.toLowerCase()) {
-      return true;
-    }
-  }
-  return true;
-};
 
 module.exports = {
   create,

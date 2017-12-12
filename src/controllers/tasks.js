@@ -1,4 +1,5 @@
 const { TaskModel } = require('../models');
+const validator = require('../helpers/validators');
 
 const findAll = (req, res, next) => {
   const {
@@ -31,17 +32,17 @@ const findById = (req, res, next) => {
 };
 
 const create = (req, res, next) => {
-  const { id, title, completed = false } = req.body;
-  if (TaskModel.validate({ id, title, completed })) {
-    TaskModel.create({
-      _id: id, title, completed, userId: req.userId,
-    })
+  const { _id, title, completed = false } = req.body;
+  const task = { _id, title, completed, userId: req.userId };
+  try {
+    validator.validateTask(task);
+    TaskModel.create(task)
       .then((result) => {
         res.json(result);
       })
       .catch(err => next(err));
-  } else {
-    res.status(403).json({ message: 'Invalid input data' });
+  } catch (err) {
+    res.status(403).json({ message: err.message });
   }
 };
 
