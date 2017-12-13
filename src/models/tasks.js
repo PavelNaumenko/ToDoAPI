@@ -10,17 +10,23 @@ const create = task => driver.db.collection(COLLECTION).insertOne({
 })
   .then(result => result.ops[0]);
 
-const findAllByUserId = (filter, limit = 0, offset = 0, sort = 1) => driver.db.collection(COLLECTION)
-  .find(filter, {
-    _id: 1, title: 1, completed: 1, created_at: 1,
-  })
-  .skip(parseInt(offset, 10))
-  .limit(parseInt(limit, 10))
-  .sort({ created_at: parseInt(sort, 10) })
+const findAllByUserId = ({ filter, limit, offset, sort }) => driver.db.collection(COLLECTION)
+  .find(
+    filter,
+    {
+      _id: 1,
+      title: 1,
+      completed: 1,
+      created_at: 1,
+    },
+  )
+  .skip(offset)
+  .limit(limit)
+  .sort({ created_at: sort })
   .toArray();
 
-const findById = id => driver.db.collection(COLLECTION)
-  .findOne({ _id: new ObjectId(id) }, { _id: 1, title: 1, completed: 1 });
+const findById = ({ _id, userId }) => driver.db.collection(COLLECTION)
+  .findOne({ _id: new ObjectId(_id), userId }, { _id: 1, title: 1, completed: 1, created_at: 1 });
 
 const update = task => driver.db.collection(COLLECTION).updateOne({ _id: new ObjectId(task._id) }, {
   $set: {
@@ -41,5 +47,4 @@ module.exports = {
   update,
   remove,
   removeAll,
-  validate,
 };

@@ -2,33 +2,31 @@ const { TaskModel } = require('../models');
 const validator = require('../helpers/validators');
 
 const findAll = (req, res, next) => {
-  const {
-    limit, offset, completed, created_at,
-  } = req.query;
-  const { userId } = req;
-  const filter = { userId };
-  if (completed) {
-    filter.completed = completed;
+  try {
+    const filter = validator.validateTaskFilter({ ...req.query, userId: req.userId });
+    TaskModel.findAllByUserId(filter)
+      .then(tasks => res.status(200).json(tasks))
+      .catch(err => next(err));
+  } catch (err) {
+    res.status(403).json({ message: err.message });
   }
-  if (created_at !== '-1' && created_at !== '1') {
-    res.status(403).json({ message: 'Bad sort specification ' });
-    return;
-  }
-  TaskModel.findAllByUserId(filter, limit, offset, created_at)
-    .then(tasks => res.status(200).json(tasks))
-    .catch(err => next(err));
 };
 
 const findById = (req, res, next) => {
-  TaskModel.findById(req.params.id)
-    .then((task) => {
-      if (task) {
-        res.status(201).json(task);
-      } else {
-        res.status(404).json({ message: 'Task not found' });
-      }
-    })
-    .catch(err => next(err));
+  const _id = req.params.id;
+  if (validator.isValidId(_id)) {
+    TaskModel.findById({ _id, userId: req.userId })
+      .then((task) => {
+        if (task) {
+          res.status(201).json(task);
+        } else {
+          res.status(404).json({ message: 'Task not found' });
+        }
+      })
+      .catch(err => next(err));
+  }else{
+    res.status(400).json({ message: '_id must be a string of 24 hex characters' });
+  }
 };
 
 const create = (req, res, next) => {
@@ -76,6 +74,7 @@ const removeAll = (req, res, next) => {
   if (completed) {
     filter.completed = completed;
   }
+  filter.userId = req.userId;
   TaskModel.removeAll(filter)
     .then((task) => {
       if (task) {
