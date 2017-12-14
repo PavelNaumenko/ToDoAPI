@@ -11,26 +11,48 @@ const validateUser = (email, password) => {
   return true;
 };
 
-const isValidId = _id => /^[0-9a-fA-F]{24}$/.test(_id);
+const isValidId = (_id) => {
+  if (!_id) {
+    return true;
+  }
+  if (_id && /^[0-9a-fA-F]{24}$/.test(_id)) {
+    return true;
+  }
+  throw new Error('_id must be a string of 24 hex characters');
+};
 
-const validateTask = (task) => {
-  const { _id, title, completed = false } = task;
+const isValidTitle = (title) => {
   if (!title) {
     throw new Error('Property title does not exist');
   }
   if (typeof title !== 'string') {
     throw new Error(`title expected string but got ${typeof title}`);
   }
+  return true;
+};
+
+const isValidCompleted = (completed) => {
   if (typeof completed !== 'boolean') {
-    throw new Error(`completed expected string but got ${typeof completed}`);
-  }
-  if (_id && !isValidId(_id)) {
-    throw new Error('_id must be a string of 24 hex characters');
+    throw new Error(`completed expected boolean but got ${typeof completed}`);
   }
   return true;
 };
 
-const validateTaskFilter = ({ userId, completed, created_at: createdAt, limit = 0, offset = 0 }) => {
+const validateTask = (task) => {
+  const { _id, title, completed = false } = task;
+  try {
+    isValidTitle(title);
+    isValidCompleted(completed);
+    isValidId(_id);
+  } catch (err) {
+    throw err;
+  }
+  return true;
+};
+
+const validateTaskFilter = ({
+  userId, completed, created_at: createdAt, limit = 0, offset = 0,
+}) => {
   const query = { filter: { userId } };
   if (completed) {
     if (completed !== 'true' && completed !== 'false') {
@@ -65,9 +87,35 @@ const validateTaskFilter = ({ userId, completed, created_at: createdAt, limit = 
   return query;
 };
 
+const validateEditedTask = (task) => {
+  const result = {};
+  const keys = Object.keys(task);
+  try {
+    keys.every((key) => {
+      if (key !== 'completed' && key !== 'title') {
+        throw new Error(`got unaccepted property ${key}`);
+      }
+      if (key === 'completed' && isValidCompleted(task.completed)) {
+        result.completed = task.completed;
+        return true;
+      }
+      if (key === 'title' && isValidTitle(task.title)) {
+        result.title = task.title;
+        return true;
+      }
+      return false;
+    });
+    return result;
+  } catch (err) {
+    throw err;
+  }
+};
+
+
 module.exports = {
   validateUser,
   validateTask,
   validateTaskFilter,
+  validateEditedTask,
   isValidId,
 };

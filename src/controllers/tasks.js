@@ -24,14 +24,16 @@ const findById = (req, res, next) => {
         }
       })
       .catch(err => next(err));
-  }else{
+  } else {
     res.status(400).json({ message: '_id must be a string of 24 hex characters' });
   }
 };
 
 const create = (req, res, next) => {
   const { _id, title, completed = false } = req.body;
-  const task = { _id, title, completed, userId: req.userId };
+  const task = {
+    _id, title, completed, userId: req.userId,
+  };
   try {
     validator.validateTask(task);
     TaskModel.create(task)
@@ -45,15 +47,13 @@ const create = (req, res, next) => {
 };
 
 const update = (req, res, next) => {
-  const { title, completed = false } = req.body;
-  if (TaskModel.validate({ id: req.params.id, title, completed })) {
-    TaskModel.update({
-      _id: req.params.id, title, completed, userId: req.userId,
-    })
-      .then(result => res.json(result))
+  try {
+    const body = validator.validateEditedTask(req.body);
+    TaskModel.update({ _id: req.params.id, userId: req.userId, task: body })
+      .then(result => res.json({ message: `Saved ${result.modifiedCount} items` }))
       .catch(err => next(err));
-  } else {
-    res.status(403).json({ message: 'Invalid input data' });
+  } catch (err) {
+    res.status(403).json({ message: err.message });
   }
 };
 

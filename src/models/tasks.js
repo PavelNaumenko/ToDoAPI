@@ -10,7 +10,9 @@ const create = task => driver.db.collection(COLLECTION).insertOne({
 })
   .then(result => result.ops[0]);
 
-const findAllByUserId = ({ filter, limit, offset, sort }) => driver.db.collection(COLLECTION)
+const findAllByUserId = ({
+  filter, limit, offset, sort,
+}) => driver.db.collection(COLLECTION)
   .find(
     filter,
     {
@@ -26,13 +28,15 @@ const findAllByUserId = ({ filter, limit, offset, sort }) => driver.db.collectio
   .toArray();
 
 const findById = ({ _id, userId }) => driver.db.collection(COLLECTION)
-  .findOne({ _id: new ObjectId(_id), userId }, { _id: 1, title: 1, completed: 1, created_at: 1 });
+  .findOne({ _id: new ObjectId(_id), userId }, {
+    _id: 1, title: 1, completed: 1, created_at: 1,
+  });
 
-const update = task => driver.db.collection(COLLECTION).updateOne({ _id: new ObjectId(task._id) }, {
-  $set: {
-    ...task,
-    _id: new ObjectId(task._id),
-  },
+const update = task => driver.db.collection(COLLECTION).updateOne({
+  _id: new ObjectId(task._id),
+  userId: task.userId,
+}, {
+  $set: task.task,
 });
 
 const remove = id => driver.db.collection(COLLECTION)
