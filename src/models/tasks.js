@@ -10,11 +10,9 @@ const create = task => driver.db.collection(COLLECTION).insertOne({
 })
   .then(result => result.ops[0]);
 
-const findAllByUserId = ({
-  filter, limit, offset, sort,
-}) => driver.db.collection(COLLECTION)
+const findAllByUserId = ({ where, limit, offset, sort }) => driver.db.collection(COLLECTION)
   .find(
-    filter,
+    where,
     {
       _id: 1,
       title: 1,
@@ -24,7 +22,7 @@ const findAllByUserId = ({
   )
   .skip(offset)
   .limit(limit)
-  .sort({ created_at: sort })
+  .sort(sort)
   .toArray();
 
 const findById = ({ _id, userId }) => driver.db.collection(COLLECTION)

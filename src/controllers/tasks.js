@@ -1,14 +1,15 @@
-const { TaskModel } = require('../models');
+const TaskModel = require('../models/tasks');
+const TaskFilter = require('../helpers/taskfilter');
 const validator = require('../helpers/validators');
 
-const findAll = (req, res, next) => {
+const findAll = async (req, res, next) => {
   try {
-    const filter = validator.validateTaskFilter({ ...req.query, userId: req.userId });
-    TaskModel.findAllByUserId(filter)
-      .then(tasks => res.status(200).json(tasks))
-      .catch(err => next(err));
+    const filter = new TaskFilter({ ...req.query, userId: req.userId });
+    console.log(filter);
+    const tasks = await TaskModel.findAllByUserId(filter);
+    res.status(200).json(tasks);
   } catch (err) {
-    res.status(403).json({ message: err.message });
+    next(err);
   }
 };
 
