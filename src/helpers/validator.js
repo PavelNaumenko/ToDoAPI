@@ -10,6 +10,8 @@ const isStr = str => typeof str === 'string';
 
 const isBool = str => typeof str === 'boolean' || str === 'true' || str === 'false';
 
+const isInt = number => Number.isInteger(parseInt(number, 10));
+
 const isFound = (obj, kind) => {
   if (!obj) {
     throw new ToDoError(`${kind} not found`, 404);
@@ -22,4 +24,6 @@ module.exports = {
   isId,
   isStr,
   isBool,
+  isInt,
+  isFound,
 };

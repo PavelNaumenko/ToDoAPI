@@ -1,90 +1,72 @@
 const TaskModel = require('../models/tasks');
-const TaskFilter = require('../helpers/taskfilter');
-const validator = require('../helpers/validators');
+const Task = require('../entities/task');
+const Validator = require('../helpers/validator');
 
 const findAll = async (req, res, next) => {
   try {
-    const filter = new TaskFilter({ ...req.query, userId: req.userId });
-    console.log(filter);
-    const tasks = await TaskModel.findAllByUserId(filter);
+    const task = new Task(req.query);
+    const query = task.prepareQuery({ ...req.query, userId: req.userId });
+    const tasks = await TaskModel.findAllByUserId(query);
     res.status(200).json(tasks);
   } catch (err) {
     next(err);
   }
 };
 
-const findById = (req, res, next) => {
-  const _id = req.params.id;
-  if (validator.isValidId(_id)) {
-    TaskModel.findById({ _id, userId: req.userId })
-      .then((task) => {
-        if (task) {
-          res.status(201).json(task);
-        } else {
-          res.status(404).json({ message: 'Task not found' });
-        }
-      })
-      .catch(err => next(err));
-  } else {
-    res.status(400).json({ message: '_id must be a string of 24 hex characters' });
-  }
-};
-
-const create = (req, res, next) => {
-  const { _id, title, completed = false } = req.body;
-  const task = {
-    _id, title, completed, userId: req.userId,
-  };
+const findById = async (req, res, next) => {
   try {
-    validator.validateTask(task);
-    TaskModel.create(task)
-      .then((result) => {
-        res.json(result);
-      })
-      .catch(err => next(err));
+    const task = new Task({ _id: req.params.id, userId: req.userId });
+    const result = await TaskModel.findById(task);
+    Validator.isFound(result, 'Task');
+    res.status(201).json(result);
   } catch (err) {
-    res.status(403).json({ message: err.message });
+    next(err);
   }
 };
 
-const update = (req, res, next) => {
+const create = async (req, res, next) => {
   try {
-    const body = validator.validateEditedTask(req.body);
-    TaskModel.update({ _id: req.params.id, userId: req.userId, task: body })
-      .then(result => res.json({ message: `Saved ${result.modifiedCount} items` }))
-      .catch(err => next(err));
+    const task = new Task({ ...req.body, userId: req.userId });
+    const result = await TaskModel.create(task);
+    res.json(result);
   } catch (err) {
-    res.status(403).json({ message: err.message });
+    next(err);
   }
 };
 
-const remove = (req, res, next) => {
-  TaskModel.remove(req.params.id)
-    .then((task) => {
-      if (task) {
-        res.status(200).json(task);
-      } else {
-        res.status(404).json({ message: 'Task not found' });
-      }
-    })
-    .catch(err => next(err));
+const update = async (req, res, next) => {
+  try {
+    const task = new Task({ ...req.body, userId: req.userId, _id: req.params.id });
+    const result = await TaskModel.update(task);
+    res.json({ message: `Saved ${result.modifiedCount} items` });
+  } catch (err) {
+    next(err);
+  }
 };
 
-const removeAll = (req, res, next) => {
-  const { filter = {}, completed } = req.query;
-  if (completed) {
-    filter.completed = completed;
+const remove = async (req, res, next) => {
+  try {
+    const task = new Task({ _id: req.params.id });
+    const result = await TaskModel.remove(task);
+    Validator.isFound(result, 'Task');
+    res.status(200).json(task);
+  } catch (err) {
+    next(err);
   }
-  filter.userId = req.userId;
-  TaskModel.removeAll(filter)
-    .then((task) => {
-      if (task) {
-        res.status(200).json(task);
-      } else {
-        res.status(404).json({ message: 'Task not found' });
-      }
-    })
-    .catch(err => next(err));
+};
+
+const removeAll = async (req, res, next) => {
+  try {
+    const { filter = { userId: req.userId }, completed } = req.query;
+    if (completed) {
+      filter.completed = completed;
+    }
+    const result = await TaskModel.removeAll(filter);
+    Validator.isFound(result, 'Tasks');
+    res.status(200).json(result);
+  } catch (err) {
+    next(err);
+  }
 };
 
 module.exports = {

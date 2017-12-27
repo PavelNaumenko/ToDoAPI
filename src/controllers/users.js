@@ -18,7 +18,7 @@ const signUp = async (req, res, next) => {
   try {
     const user = new User(req.body);
     await UserModel.isDuplicateUser(user);
-    const result = UserModel.save(user);
+    const result = await UserModel.save(user);
     res.status(200).json(auth.createToken(result.insertedId));
   } catch (err) {
     next(err);
